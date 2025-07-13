@@ -344,6 +344,202 @@ function afficher($titre, $contenu)
         </div>
       </section>
 
+      <!-- Section des définitions -->
+      <section id="defs" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-book-open  text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Lexique Gabonais</h2>
+        </div>
+      
+        <p class="text-center text-gabon-yellow mb-10 max-w-3xl mx-auto">
+          Découvrez les définitions des principaux termes géographiques et culturels utilisés sur Gabon Explorer
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Carte Ville -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-blue p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-city mr-2"></i> Ville
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Une <span class="font-semibold text-gabon-blue">ville</span> au Gabon est une zone urbaine caractérisée par une importante densité de population et des activités économiques diversifiées.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-blue-100 text-gabon-blue rounded-full p-2 mr-3">
+                  <i class="fas fa-users"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Libreville, Port-Gentil, Franceville</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Province -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-green p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-map mr-2"></i> Province
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon est divisé en <span class="font-semibold text-gabon-green">9 provinces</span> qui constituent le premier niveau de subdivision administrative du territoire national.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-green-100 text-gabon-green rounded-full p-2 mr-3">
+                  <i class="fas fa-flag"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Estuaire, Haut-Ogooué, Ogooué-Maritime</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Capitale -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-yellow p-4">
+              <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-star mr-2"></i> Capitale
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                <span class="font-semibold text-gabon-yellow">Libreville</span> est la capitale politique et administrative du Gabon, située dans la province de l'Estuaire.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-yellow-100 text-yellow-800 rounded-full p-2 mr-3">
+                  <i class="fas fa-landmark"></i>
+                </div>
+                <p class="text-sm text-gray-600">Fondée en 1849, centre politique et économique</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Chef-lieu -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-blue p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-building mr-2"></i> Chef-lieu
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le <span class="font-semibold text-gabon-blue">chef-lieu</span> est la ville principale d'une province ou d'un département où se concentrent les institutions administratives.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-blue-100 text-gabon-blue rounded-full p-2 mr-3">
+                  <i class="fas fa-university"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Oyem (Woleu-Ntem), Mouila (Ngounié)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Département -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-green p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-map-signs mr-2"></i> Département
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Les <span class="font-semibold text-gabon-green">départements</span> sont des subdivisions des provinces. Le Gabon compte 50 départements administrés par un préfet.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-green-100 text-gabon-green rounded-full p-2 mr-3">
+                  <i class="fas fa-road"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Komo (Estuaire), Boumi-Louetsi (Haut-Ogooué)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Ethnie -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-yellow p-4">
+              <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-people-group mr-2"></i> Ethnie
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon compte une cinquantaine d'<span class="font-semibold text-gabon-yellow">ethnies</span> réparties en groupes linguistiques, chacune avec sa propre culture et traditions.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-yellow-100 text-yellow-800 rounded-full p-2 mr-3">
+                  <i class="fas fa-masks-theater"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Fang, Mpongwè, Punu, Téké</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Personnage marquant -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-blue p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-user-graduate mr-2"></i> Personnage marquant
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Un <span class="font-semibold text-gabon-blue">personnage marquant</span> est une personnalité gabonaise qui a contribué de manière significative à l'histoire, la culture ou le développement du pays.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-blue-100 text-gabon-blue rounded-full p-2 mr-3">
+                  <i class="fas fa-medal"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Léon M'ba, Omar Bongo, Angèle Rawiri</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Faune -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-green p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-paw mr-2"></i> Faune gabonaise
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon abrite une <span class="font-semibold text-gabon-green">biodiversité exceptionnelle</span> avec 80% de son territoire couvert par la forêt équatoriale.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-green-100 text-gabon-green rounded-full p-2 mr-3">
+                  <i class="fas fa-tree"></i>
+                </div>
+                <p class="text-sm text-gray-600">Éléphants, gorilles, mandrills, léopards</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Parc National -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-yellow p-4">
+              <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-tree mr-2"></i> Parc National
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon a créé 13 <span class="font-semibold text-gabon-yellow">parcs nationaux</span> couvrant 11% du territoire pour préserver sa riche biodiversité.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-yellow-100 text-yellow-800 rounded-full p-2 mr-3">
+                  <i class="fas fa-mountain"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Loango, Ivindo, Lopé, Mayumba</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section Informations générales -->
       <section id="infos" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
         <div class="flex items-center mb-6">

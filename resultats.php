@@ -671,29 +671,30 @@ function afficherCarte($titre, $contenu, $type)
                         : "./assets/images/personnalitees/default.jpg";
 
                     $contenu = "
-                        <div class='flex flex-col md:flex-row gap-6'>
-                            <div class='md:w-1/3'>
-                                <img src='$image_path' alt='Portrait de $nom' class='w-full h-64 object-cover rounded-lg shadow-md'>
-                                <div class='mt-4 bg-gray-100 p-4 rounded-lg'>
-                                    <p class='font-semibold'><i class='fas fa-calendar-day text-amber-500 mr-2'></i> Naissance: $naissance</p>
-                                    <p class='font-semibold'><i class='fas fa-calendar-times text-amber-500 mr-2'></i> Décès: " . ($deces ?: 'toujours en vie') . "</p>
-                                    <p class='font-semibold'><i class='fas fa-map-marker-alt text-amber-500 mr-2'></i> Lieu: $lieu</p>
-                                    <p class='font-semibold'><i class='fas fa-map text-amber-500 mr-2'></i> Province: $province</p>
-                                    <p class='font-semibold'><i class='fas fa-users text-amber-500 mr-2'></i> Ethnie: $ethnie</p>
-                                </div>
-                            </div>
-                            <div class='md:w-2/3'>
-                                <div class='mb-4'>
-                                    <h5 class='font-bold text-lg mb-2'><i class='fas fa-info-circle text-amber-500 mr-2'></i> Présentation</h5>
-                                    <p>$description</p>
-                                </div>
-                                <div>
-                                    <h5 class='font-bold text-lg mb-2'><i class='fas fa-book-open text-amber-500 mr-2'></i> Histoire et contributions</h5>
-                                    <p>$histoire</p>
-                                </div>
-                            </div>
+                        <div class='bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl overflow-hidden shadow-lg'>
+                    <div class='flex flex-col md:flex-row'>
+                      <div class='md:w-1/3 p-4 flex justify-center items-center'>
+                        <img src='$image_path' alt='Portrait de $nom' class='w-32 h-32 md:w-40 md:h-40 object-cover rounded-full border-4 border-white shadow-lg'>
+                      </div>
+                      <div class='md:w-2/3 p-4'>
+                        <h3 class='text-xl font-bold text-gray-800'>$nom</h3>
+                        <div class='flex flex-wrap gap-2 mt-2 mb-3'>
+                          <span class='bg-primary-100 text-primary-800 text-xs px-2 py-1 rounded'>$ethnie</span>
+                          <span class='bg-accent-100 text-accent-800 text-xs px-2 py-1 rounded'>$province</span>
+                          <span class='bg-secondary-100 text-secondary-800 text-xs px-2 py-1 rounded'>$lieu</span>
                         </div>
-                    ";
+                        <p class='text-gray-600 mb-4'>$description</p>
+                        <div class='flex justify-between text-sm text-gray-500'>
+                          <span><i class='fas fa-birthday-cake mr-1'></i> $naissance</span>
+                          <span><i class='fas fa-cross mr-1'></i> $deces</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class='p-4 bg-white'>
+                      <h4 class='font-semibold text-gray-800 mb-2'>Histoire et contributions</h4>
+                      <p class='text-gray-600'>$histoire</p>
+                    </div>
+                  </div>";
 
                     $personnagesContent .= afficherCarte(
                         "Personnalité : $nom",

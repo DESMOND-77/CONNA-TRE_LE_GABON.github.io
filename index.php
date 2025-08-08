@@ -1,0 +1,1225 @@
+<?php
+require "connect.php";
+
+$conn = new mysqli(SERVEUR, NOM, PASSE, BASE);
+if ($conn->connect_error) {
+  die("<p class='text-red-600 bg-red-100 p-4 rounded'>Erreur de connexion à la base de données.</p>");
+}
+
+function afficher($titre, $contenu)
+{
+  echo "<div class='bg-white rounded-xl shadow-lg overflow-hidden p-6 mb-8 border-l-4 border-green-500'>
+          <h2 class='text-2xl font-bold text-gray-800 mb-4'>$titre</h2>
+          <div class='prose max-w-none'>$contenu</div>
+        </div>";
+}
+?>
+
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+
+<head>
+  
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Découvrez le Gabon, son histoire, sa culture, ses personnalités marquantes et ses ressources naturelles. Une plateforme interactive pour explorer la richesse du patrimoine gabonais.">
+  <meta name="keywords" content="Gabon, histoire gabonaise, culture gabonaise, personnalités gabonaises, manganèse, okoumé, parc national, hymne national, Libreville">
+  <meta name="author" content="Connaître le Gabon">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="French">
+  <meta property="og:title" content="Connaître le Gabon - Histoire, Culture et Patrimoine">
+  <meta property="og:description" content="Explorez la richesse du Gabon à travers son histoire, sa culture et ses ressources naturelles.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:image" content="https://example.com/assets/images/gabon_explorer.jpg">
+
+
+   <title>Connaître le Gabon | Gabon Explorer</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="./assets/js/custom.js"></script>
+  <link rel="stylesheet" href="./assets/css/custom.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    .header-gradient {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(22, 101, 52, 0.8) 50%, rgba(234, 179, 8, 0.8) 100%);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(22, 101, 52, 0.9) 50%, rgba(234, 179, 8, 0.9) 100%);
+    }
+
+    .card-hover {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-gradient {
+      background: linear-gradient(to right, #f0fdf4, #eff6ff);
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-item::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(to right, #3b82f6, #22c55e, #eab308);
+      transition: width 0.3s ease;
+    }
+
+    .nav-item:hover::after {
+      width: 100%;
+    }
+
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .animate-pulse-slow {
+      animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+    }
+
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+
+    .menu-toggle span {
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle.open span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .menu-toggle.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -6px);
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+  <!-- Barre de progression -->
+  <div class="w-full h-1 bg-gray-200 fixed top-0 z-50">
+    <div id="progressBar" class="h-1 bg-gradient-to-r from-accent-500 via-primary-500 to-secondary-500 w-0"></div>
+  </div>
+
+  <!-- Page Header -->
+  <header class="relative min-h-screen overflow-hidden">
+    <!-- Vidéo en arrière-plan -->
+    <div class="absolute top-0 left-0 w-full h-full z-0">
+      <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-70 z-10"></div>
+      <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
+        <source src="./assets/video/dynastie_gabon.mp4" type="video/mp4" loading="lazy">
+      </video>
+    </div>
+
+    <!-- Barre de navigation desktop -->
+    <nav class="hidden md:flex justify-between items-center p-4 sticky top-0 z-20 bg-white/10 backdrop-blur-sm">
+      <div class="flex items-center">
+        <div class="w-12 h-12 rounded-full mr-4 bg-secondary-500 flex items-center justify-center animate-pulse-slow">
+          <img src="./assets/images/logo.png" alt="Logo" class="w-10 h-10">
+        </div>
+        <div class="text-3xl font-bold text-white">Gabon Explorer</div>
+      </div>
+
+      <div class="flex space-x-4">
+        <a href="#description" class="nav-item text-white hover:text-secondary-300 px-3 py-2 transition font-medium">Description</a>
+        <a href="#infos" class="nav-item text-white hover:text-secondary-300 px-3 py-2 transition font-medium">Informations</a>
+        <a href="#symboles" class="nav-item text-white hover:text-secondary-300 px-3 py-2 transition font-medium">Symboles</a>
+        <a href="#richesses" class="nav-item text-white hover:text-secondary-300 px-3 py-2 transition font-medium">Richesses</a>
+        <a href="#ethnies" class="nav-item text-white hover:text-secondary-300 px-3 py-2 transition font-medium">Ethnies</a>
+        <a href="./contact.php" class="nav-item text-white hover:text-secondary-300 px-3 py-2 transition font-medium">Contact</a>
+      </div>
+
+      <form action="resultats.php" method="get" class="flex relative">
+        <input name="q" type="search" id="searchInput" placeholder="ville, département, province, personnage, ethnie..."
+          class="flex-1 px-4 py-2 rounded-l-full border-0 bg-white/90 text-gray-800 focus:ring-2 focus:ring-primary-500 focus:outline-none" />
+        <div id="suggestions" class="absolute mt-10 bg-white border border-gray-200 rounded-lg shadow-lg w-full z-50 max-h-60 overflow-y-auto"></div>
+        <button type="submit" class="text-white px-5 py-2 rounded-r-full bg-gradient-to-r from-primary-600 to-accent-600 hover:opacity-90 transition">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="relative flex flex-col items-center justify-center h-full text-center px-4 pt-40 md:pt-40 z-10">
+      <h1 class="text-white text-4xl md:text-6xl font-extrabold uppercase drop-shadow-lg">
+        Connaître le Gabon
+      </h1>
+      <div class="w-32 h-1 bg-gradient-to-r from-secondary-500 via-primary-500 to-accent-500 my-6 mx-auto"></div>
+      <p class="text-secondary-200 text-xl md:text-3xl font-semibold tracking-wide max-w-3xl mx-auto drop-shadow-md">
+        MIEUX SE CONNAÎTRE, C'EST SAVOIR OÙ ON VA
+      </p>
+      <button onclick="document.getElementById('description').scrollIntoView({ behavior: 'smooth' });"
+        class="mt-10 bg-gradient-to-r from-secondary-500 to-primary-600 hover:from-secondary-600 hover:to-primary-700 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg">
+        Explorer <i class="fas fa-arrow-down ml-2"></i>
+      </button>
+    </div>
+
+    <!-- Barre de navigation mobile -->
+    <div class="md:hidden flex items-center justify-between bg-primary-800 p-4 text-white z-20 fixed top-0 left-0 right-0">
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full mr-3 bg-secondary-500 flex items-center justify-center">
+          <img src="./assets/images/logo.png" alt="Logo" class="w-8 h-8">
+        </div>
+        <div class="text-xl font-bold text-white">Gabon Explorer</div>
+      </div>
+
+      <div class="flex items-center">
+        <button id="search-toggle" class="text-white mr-4 focus:outline-none">
+          <i class="fas fa-search"></i>
+        </button>
+        <button id="menu-toggle"
+          class="menu-toggle text-white focus:outline-none px-2 py-2 rounded hover:bg-primary-700 transition">
+          <span class="block w-6 h-0.5 bg-white mb-1"></span>
+          <span class="block w-6 h-0.5 bg-white mb-1"></span>
+          <span class="block w-6 h-0.5 bg-white"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Formulaire de recherche mobile -->
+    <div id="mobile-search" class="md:hidden fixed top-16 left-0 right-0 bg-primary-800 p-4 z-20 hidden">
+      <form action="resultats.php" method="get" class="flex">
+        <input name="q" type="search" id="mobile_searchInput" placeholder="ville, département, province, personnage, ethnie..."
+          class="flex-1 px-4 py-2 rounded-l-full border-0 bg-white text-gray-800 focus:ring-2 focus:ring-primary-500 focus:outline-none" />
+        <div id="suggestions_mobile" class="absolute mt-10 bg-white border border-gray-200 rounded-lg shadow-lg w-full z-50 max-h-60 overflow-y-auto"></div>
+        <button type="submit" class="text-white px-5 py-2 rounded-r-full bg-gradient-to-r from-primary-600 to-accent-600">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Menu mobile -->
+    <nav id="mobile-menu" class="mobile-menu md:hidden fixed top-0 right-0 w-64 h-full bg-primary-800 z-30 p-6">
+      <div class="flex justify-end mb-6">
+        <button id="close-menu" class="text-white text-2xl focus:outline-none">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="flex flex-col space-y-4 mt-8">
+        <a href="#description" class="nav-item text-white hover:text-secondary-300 px-4 py-3 rounded transition font-medium">Description</a>
+        <a href="#infos" class="nav-item text-white hover:text-secondary-300 px-4 py-3 rounded transition font-medium">Informations</a>
+        <a href="#symboles" class="nav-item text-white hover:text-secondary-300 px-4 py-3 rounded transition font-medium">Symboles</a>
+        <a href="#richesses" class="nav-item text-white hover:text-secondary-300 px-4 py-3 rounded transition font-medium">Richesses</a>
+        <a href="#ethnies" class="nav-item text-white hover:text-secondary-300 px-4 py-3 rounded transition font-medium">Ethnies</a>
+        <a href="./contact.php" class="nav-item text-white hover:text-secondary-300 px-3 py-2 transition font-medium">Contact</a>
+
+      </div>
+      <div class="mt-8 pt-6 border-t border-primary-700">
+        <div class="flex space-x-6 justify-center">
+          <a href="#" class="text-white hover:text-secondary-300 text-xl"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white hover:text-secondary-300 text-xl"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-white hover:text-secondary-300 text-xl"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-white hover:text-secondary-300 text-xl"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="flex flex-col md:flex-row">
+    <!-- Sidebar -->
+    <aside class="hidden md:block w-full md:w-64 bg-white shadow-lg sticky top-0 h-screen overflow-y-auto z-40">
+      <div class="p-6 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+          <i class="fas fa-compass mr-2 text-primary-600"></i> Navigation
+        </h2>
+      </div>
+
+      <div class="p-4">
+        <ul class="space-y-2">
+          <li><a href="#description" class="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <i class="fas fa-book-open mr-3 text-primary-500"></i> Description
+            </a></li>
+          <!-- <li><a href="#biblio" class="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <i class="fas fa-book mr-3 text-primary-500"></i> Bibliothèque nationale
+            </a></li> -->
+          <li><a href="#infos" class="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <i class="fas fa-info-circle mr-3 text-primary-500"></i> Informations générales
+            </a></li>
+          <li><a href="#symboles" class="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <i class="fas fa-flag mr-3 text-primary-500"></i> Symboles nationaux
+            </a></li>
+          <li class="relative">
+            <a href="#richesses" class="flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <div class="flex items-center">
+                <i class="fas fa-gem mr-3 text-primary-500"></i> Les richesses
+              </div>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </a>
+            <ul class="pl-8 mt-2 space-y-2">
+              <li><a href="#petrole" class="flex items-center px-4 py-2 text-gray-600 hover:bg-secondary-50 rounded-lg transition">
+                  <i class="fas fa-gas-pump mr-2 text-secondary-500"></i> Pétrole
+                </a></li>
+              <li><a href="#bois" class="flex items-center px-4 py-2 text-gray-600 hover:bg-secondary-50 rounded-lg transition">
+                  <i class="fas fa-tree mr-2 text-secondary-500"></i> Bois et Forêts
+                </a></li>
+              <li><a href="#minerais" class="flex items-center px-4 py-2 text-gray-600 hover:bg-secondary-50 rounded-lg transition">
+                  <i class="fas fa-mountain mr-2 text-secondary-500"></i> Minerais
+                </a></li>
+              <li><a href="#biodiversite" class="flex items-center px-4 py-2 text-gray-600 hover:bg-secondary-50 rounded-lg transition">
+                  <i class="fas fa-leaf mr-2 text-secondary-500"></i> Biodiversité
+                </a></li>
+            </ul>
+          </li>
+          <li><a href="#ethnies" class="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <i class="fas fa-users mr-3 text-primary-500"></i> Ethnies dominantes
+            </a></li>
+          <li><a href="#personnages" class="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <i class="fas fa-user-tie mr-3 text-primary-500"></i> Personnages marquants
+            </a></li>
+          <!-- <li><a href="#bibliographie" class="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 rounded-lg transition">
+              <i class="fas fa-book mr-3 text-primary-500"></i> Bibliographie présidentielle
+            </a></li> -->
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8">
+      <!-- Section Description -->
+      <section id="description" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-book-open text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Description</h2>
+        </div>
+
+        <div class="prose max-w-none text-gray-700">
+          <p class="mb-4">Le Gabon est un pays d'Afrique centrale, situé sur la côte atlantique. Il est bordé par la Guinée équatoriale au nord, le Cameroun à l'est et le Congo-Brazzaville au sud. Le pays est riche en ressources naturelles, notamment en pétrole, en bois et en minerais.</p>
+
+          <blockquote class="border-l-4 border-secondary-500 pl-4 py-2 my-4 italic bg-secondary-50 p-4 rounded-lg">
+            <p class="mb-3">« Avant 1960, le Gabon était considéré comme un pays sans Histoire. Non pas que les peuples qui l'habitent n'eussent pas un passé digne d'être révélé à leurs membres et au reste de l'humanité, mais ceux qui détenaient alors le pouvoir n'y trouvaient aucun intérêt et les Gabonais eux-mêmes n'étaient guère suffisamment outillés pour le faire connaître.</p>
+            <p class="mb-3">En effet, les recherches historiques sur le Gabon ont longtemps été l'apanage des Européens, qui s'intéressaient surtout à l'histoire de la colonisation, de la traite négrière et de l'esclavage. Les autochtones, quant à eux, n'avaient pas les moyens de faire connaître leur passé, car ils n'avaient pas d'écriture et leurs traditions orales étaient souvent déformées par les colons.</p>
+            <p class="mb-3">Depuis l'indépendance, le Gabon a fait des progrès considérables dans le domaine de la recherche historique. De nombreux historiens gabonais ont été formés dans les universités du pays et à l'étranger, et ils ont commencé à étudier l'histoire de leur pays de manière plus approfondie.</p>
+          </blockquote>
+
+          <p class="mt-4">Depuis quelques années, cependant, des recherches de très haut niveau sont effectuées sur le Gabon par des spécialistes autochtones et étrangers en sciences humaines ou sociales. Leurs résultats, bien qu'encore très minces, ont déjà permis de lever le voile sur nombre de points obscurs du passé de ce pays et, à l'heure actuelle, une synthèse est désormais envisageable, qui doit faire le point des connaissances établies, suggérer des directions de recherches possibles et combler une lacune en mettant à la disposition du public une vue générale de l'histoire du Gabon depuis les origines jusqu'à nos jours.</p>
+
+          <div class="mt-6 bg-gray-50 p-4 rounded-lg border-l-4 border-primary-500">
+            <p class="text-sm font-medium"><span class="font-bold">Source :</span> Histoire du Gabon, Des origines à l'aube du XXIe siècle, Nicolas Metegue N'Nah, L'Harmattan, Paris, 2006, 372 p., p. 7</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section des définitions -->
+      <section id="defs" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-book-open  text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Lexique Gabonais</h2>
+        </div>
+      
+        <p class="text-center text-gabon-yellow mb-10 max-w-3xl mx-auto">
+          Découvrez les définitions des principaux termes géographiques et culturels utilisés sur Gabon Explorer
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Carte Ville -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-blue p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-city mr-2"></i> Ville
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Une <span class="font-semibold text-gabon-blue">ville</span> au Gabon est une zone urbaine caractérisée par une importante densité de population et des activités économiques diversifiées.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-blue-100 text-gabon-blue rounded-full p-2 mr-3">
+                  <i class="fas fa-users"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Libreville, Port-Gentil, Franceville</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Province -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-green p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-map mr-2"></i> Province
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon est divisé en <span class="font-semibold text-gabon-green">9 provinces</span> qui constituent le premier niveau de subdivision administrative du territoire national.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-green-100 text-gabon-green rounded-full p-2 mr-3">
+                  <i class="fas fa-flag"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Estuaire, Haut-Ogooué, Ogooué-Maritime</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Capitale -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-yellow p-4">
+              <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-star mr-2"></i> Capitale
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                <span class="font-semibold text-gabon-yellow">Libreville</span> est la capitale politique et administrative du Gabon, située dans la province de l'Estuaire.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-yellow-100 text-yellow-800 rounded-full p-2 mr-3">
+                  <i class="fas fa-landmark"></i>
+                </div>
+                <p class="text-sm text-gray-600">Fondée en 1849, centre politique et économique</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Chef-lieu -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-blue p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-building mr-2"></i> Chef-lieu
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le <span class="font-semibold text-gabon-blue">chef-lieu</span> est la ville principale d'une province ou d'un département où se concentrent les institutions administratives.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-blue-100 text-gabon-blue rounded-full p-2 mr-3">
+                  <i class="fas fa-university"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Oyem (Woleu-Ntem), Mouila (Ngounié)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Département -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-green p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-map-signs mr-2"></i> Département
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Les <span class="font-semibold text-gabon-green">départements</span> sont des subdivisions des provinces. Le Gabon compte 50 départements administrés par un préfet.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-green-100 text-gabon-green rounded-full p-2 mr-3">
+                  <i class="fas fa-road"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Komo (Estuaire), Boumi-Louetsi (Haut-Ogooué)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Ethnie -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-yellow p-4">
+              <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-people-group mr-2"></i> Ethnie
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon compte une cinquantaine d'<span class="font-semibold text-gabon-yellow">ethnies</span> réparties en groupes linguistiques, chacune avec sa propre culture et traditions.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-yellow-100 text-yellow-800 rounded-full p-2 mr-3">
+                  <i class="fas fa-masks-theater"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Fang, Mpongwè, Punu, Téké</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Personnage marquant -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-blue p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-user-graduate mr-2"></i> Personnage marquant
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Un <span class="font-semibold text-gabon-blue">personnage marquant</span> est une personnalité gabonaise qui a contribué de manière significative à l'histoire, la culture ou le développement du pays.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-blue-100 text-gabon-blue rounded-full p-2 mr-3">
+                  <i class="fas fa-medal"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Léon M'ba, Omar Bongo, Angèle Rawiri</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Faune -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-green p-4">
+              <h3 class="text-xl font-bold text-white flex items-center">
+                <i class="fas fa-paw mr-2"></i> Faune gabonaise
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon abrite une <span class="font-semibold text-gabon-green">biodiversité exceptionnelle</span> avec 80% de son territoire couvert par la forêt équatoriale.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-green-100 text-gabon-green rounded-full p-2 mr-3">
+                  <i class="fas fa-tree"></i>
+                </div>
+                <p class="text-sm text-gray-600">Éléphants, gorilles, mandrills, léopards</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte Parc National -->
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden result-card">
+            <div class="bg-gabon-yellow p-4">
+              <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-tree mr-2"></i> Parc National
+              </h3>
+            </div>
+            <div class="p-5">
+              <p class="text-gray-700 mb-4">
+                Le Gabon a créé 13 <span class="font-semibold text-gabon-yellow">parcs nationaux</span> couvrant 11% du territoire pour préserver sa riche biodiversité.
+              </p>
+              <div class="flex items-center">
+                <div class="bg-yellow-100 text-yellow-800 rounded-full p-2 mr-3">
+                  <i class="fas fa-mountain"></i>
+                </div>
+                <p class="text-sm text-gray-600">Exemples: Loango, Ivindo, Lopé, Mayumba</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Informations générales -->
+      <section id="infos" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-info-circle text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Informations générales</h2>
+        </div>
+
+        <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl p-6 shadow-inner">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <tbody class="divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">Nom officiel</th>
+                      <td class="px-6 py-4 font-medium">République gabonaise</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">Capitale</th>
+                      <td class="px-6 py-4">
+                        <div class="flex items-center">
+                          <span class="font-medium">Libreville</span>
+                          <span class="ml-2 text-xs text-gray-500"><i class="fas fa-map-marker-alt"></i> 0°25'N, 9°27'E</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">Chef de l'État</th>
+                      <td class="px-6 py-4">
+                        <div>
+                          <p class="font-medium">Brice Oligui Nguema</p>
+                          <div class="flex flex-wrap gap-2 mt-1 text-sm text-gray-500">
+                            <span class="bg-gray-100 px-2 py-1 rounded">depuis le 13 avril 2025</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">Superficie</th>
+                      <td class="px-6 py-4 font-medium">267 667 km²</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">
+                        Population <span class="text-gray-400 font-normal">(2023)</span>
+                      </th>
+                      <td class="px-6 py-4 font-medium">2 484 789 habitants</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">Projection de population 2050</th>
+                      <td class="px-6 py-4 font-medium">4 084 533 habitants</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">Langue officielle</th>
+                      <td class="px-6 py-4 font-medium">français</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <th class="px-6 py-4 text-right font-medium text-gray-500 whitespace-nowrap">Code ISO-2</th>
+                      <td class="px-6 py-4">
+                        <span class="font-medium bg-gray-100 px-3 py-1 rounded-lg">GA</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="flex justify-center items-center">
+              <div class="relative w-full max-w-xs">
+                <img src="./assets/images/ga.svg" alt="Carte du Gabon" class="w-full h-auto object-contain opacity-20">
+                <!-- <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="bg-white p-4 rounded-lg shadow-lg border-2 border-primary-500">
+                    <img src="./assets/images/drapeau_1.png" alt="Drapeau du Gabon" class="w-32 h-auto mx-auto">
+                    <p class="text-center mt-2 font-medium">Drapeau du Gabon</p>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Symboles nationaux -->
+      <section id="symboles" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-flag text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Symboles nationaux</h2>
+        </div>
+
+        <div class="prose max-w-none">
+          <p class="text-gray-700 mb-6">Le Gabon possède plusieurs symboles nationaux qui reflètent son identité et sa culture. Ces symboles sont importants pour le peuple gabonais et sont souvent utilisés lors des célébrations nationales.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Blason -->
+            <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl p-6">
+              <h3 class="text-xl font-semibold text-primary-700 mb-3">Blason du Gabon</h3>
+              <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex-shrink-0">
+                  <img src="./assets/images/symboles/Armoiries-du-Gabon-1024x988.png" alt="Blason du Gabon" class="w-40 h-40 object-contain">
+                </div>
+                <div>
+                  <p>Le blason du Gabon est un symbole national qui représente l'identité et les valeurs du pays. Il a été adopté en 1960, lors de l'indépendance du Gabon.</p>
+                  <p class="mt-2">Il est composé d'une nef de sable naviguant sur une mer d'azur, symbolisant les aspirations du peuple gabonais au progrès et à la prospérité. Les trois besants d'or représentent les richesses minières du pays.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sceau -->
+            <div class="bg-gradient-to-br from-secondary-50 to-accent-50 rounded-xl p-6">
+              <h3 class="text-xl font-semibold text-primary-700 mb-3">Sceau du Gabon</h3>
+              <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex-shrink-0">
+                  <img src="./assets/images/symboles/Sceaux_du _Gabon.png" alt="Sceau du Gabon" class="w-40 h-40 object-contain">
+                </div>
+                <div>
+                  <p>Le sceau de la République gabonaise est une « <strong>Maternité Allaitant</strong> », c'est-à-dire une mère qui allaite son enfant.</p>
+                  <p class="mt-2">La mère représente la République, l'État Gabonais qui nourrit ses enfants, les protège, les soigne, les éduque et veille en permanence sur leur bonheur. L'enfant représente chacun d'entre nous, membre d'une famille, la nation gabonaise à qui nous devons respect, obéissance et amour.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Devise -->
+            <div class="bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl p-6 md:col-span-2">
+              <h3 class="text-xl font-semibold text-primary-700 mb-3">Devise nationale</h3>
+              <div class="text-center">
+                <p class="text-3xl font-bold text-gray-800 mb-4">« Union - Travail - Justice »</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center mx-auto mb-3">
+                      <i class="fas fa-handshake text-primary-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-lg">Union</h4>
+                    <p class="text-gray-600 mt-1">L'union de tous les Gabonais, nécessaire à la construction d'un pays fort.</p>
+                  </div>
+                  <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="w-16 h-16 rounded-full bg-secondary-100 flex items-center justify-center mx-auto mb-3">
+                      <i class="fas fa-tools text-secondary-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-lg">Travail</h4>
+                    <p class="text-gray-600 mt-1">Le travail de chacun bénéficie à tous et il est le seul gage de la réussite et du progrès.</p>
+                  </div>
+                  <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="w-16 h-16 rounded-full bg-accent-100 flex items-center justify-center mx-auto mb-3">
+                      <i class="fas fa-balance-scale text-accent-600 text-2xl"></i>
+                    </div>
+                    <h4 class="font-semibold text-lg">Justice</h4>
+                    <p class="text-gray-600 mt-1">La justice protège, assure la sécurité et le maintien de l'ordre et la paix.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hymne national -->
+            <div class="bg-gradient-to-br from-accent-50 to-primary-50 rounded-xl p-6 md:col-span-2">
+              <h3 class="text-xl font-semibold text-primary-700 mb-3">Hymne national</h3>
+              <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                  <p class="mb-4">L'hymne national du Gabon est intitulé « <strong>La Concorde</strong> ». Il a été composé par le poète et écrivain gabonais <strong>Paul M'ba Abessole</strong> en 1960, peu après l'indépendance du pays. La musique a été composée par <strong>Jean-Baptiste Obame</strong>.</p>
+                  <div class="bg-white rounded-lg p-4 shadow">
+                    <div class="flex items-center justify-between mb-4">
+                      <h4 class="text-xl font-bold">La Concorde</h4>
+                      <button id="playPauseBtn" class="bg-primary-500 hover:bg-primary-600 text-white rounded-full w-10 h-10 flex items-center justify-center">
+                        <i id="playIcon" class="fas fa-play"></i>
+                        <i id="pauseIcon" class="fas fa-pause hidden"></i>
+                      </button>
+                    </div>
+                    <audio id="audioPlayer" src="./assets/audio/Hymne_du_Gabon.mp3" type="audio/mpeg"></audio>
+                    <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
+                      <span id="currentTime">0:00</span>
+                      <span id="duration">0:00</span>
+                    </div>
+                    <input id="progressBar" type="range" min="0" max="100" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-80 overflow-y-auto">
+                    <p class="text-gray-700 italic mb-4">
+                      Uni dans la Concorde et la fraternité<br>
+                      Éveille toi Gabon, une aurore se lève,<br>
+                      Encourage l'ardeur qui vibre et nous soulève !<br>
+                      C'est enfin notre essor vers la félicité.<br>
+                      C'est enfin notre essor vers la félicité.
+                    </p>
+
+                    <p class="text-gray-700 italic mb-4">
+                      Éblouissant et fier, le jour sublime monte<br>
+                      Pourchassant à jamais l'injustice et la honte.<br>
+                      Qu'il monte, monte encore et calme nos alarmes,<br>
+                      Qu'il prône la vertu et repousse les armes.
+                    </p>
+
+                    <p class="text-gray-700 italic mb-4">
+                      Uni dans la Concorde et la fraternité<br>
+                      Éveille toi Gabon, une aurore se lève,<br>
+                      Encourage l'ardeur qui vibre et nous soulève !<br>
+                      C'est enfin notre essor vers la félicité.<br>
+                      C'est enfin notre essor vers la félicité.
+
+                    </p>
+
+                    <p class="text-gray-700 italic mb-4">
+                      Oui que le temps heureux rêvé par nos ancêtres<br>
+                      Arrive enfin chez nous, réjouisse les êtres,<br>
+                      Et chasse les sorciers, ces perfides trompeurs.<br>
+                      Qui semaient le poison et répandaient la peur.
+                    </p>
+
+                    <p class="text-gray-700 italic mb-4">
+                      Uni dans la Concorde et la fraternité<br>
+                      Éveille toi Gabon, une aurore se lève,<br>
+                      Encourage l'ardeur qui vibre et nous soulève !<br>
+                      C'est enfin notre essor vers la félicité.<br>
+                      C'est enfin notre essor vers la félicité.
+                    </p>
+
+                    <p class="text-gray-700 italic mb-4">
+                      Afin qu'aux yeux du monde et des nations amies<br>
+                      Le Gabon immortel reste digne d'envie,<br>
+                      Oublions nos querelles, ensemble bâtissons<br>
+                      L'édifice nouveau auquel tous nous rêvons.
+                    </p>
+
+                    <p class="text-gray-700 italic mb-4">
+                      Uni dans la Concorde et la fraternité<br>
+                      Éveille toi Gabon, une aurore se lève,<br>
+                      Encourage l'ardeur qui vibre et nous soulève !<br>
+                      C'est enfin notre essor vers la félicité.<br>
+                      C'est enfin notre essor vers la félicité.
+                    </p>
+
+                    <p class="text-gray-700 italic mb-4">
+                      Des bords de l'Océan au cœur de la forêt,<br>
+                      Demeurons vigilants, sans faiblesse et sans haine !<br>
+                      Autour de ce drapeau, qui vers l'honneur nous mène,<br>
+                      Saluons la Patrie et chantons sans arrêt !
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Drapeau -->
+            <div class="bg-gradient-to-br from-secondary-50 to-primary-50 rounded-xl p-6 md:col-span-2">
+              <h3 class="text-xl font-semibold text-primary-700 mb-3">Drapeau du Gabon</h3>
+              <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-shrink-0">
+                  <img src="./assets/images/symboles/Drapeau-du-Gabon-1024x768.png" alt="Drapeau du Gabon" class="w-64 h-48 object-contain border rounded-lg shadow">
+                </div>
+                <div>
+                  <p class="mb-4">Le drapeau du Gabon est composé de trois bandes horizontales égales de couleur:</p>
+                  <div class="space-y-3">
+                    <div class="flex items-center">
+                      <div class="w-8 h-8 rounded-full bg-green-700 mr-3"></div>
+                      <div>
+                        <strong class="text-green-700">Verte</strong> (en haut) : symbolise les forêts et les ressources naturelles du pays.
+                      </div>
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-8 h-8 rounded-full bg-yellow-500 mr-3"></div>
+                      <div>
+                        <strong class="text-yellow-700">Jaune</strong> : qui représente les richesses naturelles.
+                      </div>
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-8 h-8 rounded-full bg-blue-600 mr-3"></div>
+                      <div>
+                        <strong class="text-blue-700">Bleue</strong> : qui évoque l'océan Atlantique.
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mt-4">Ce drapeau a été adopté en 1960, lors de l'indépendance du Gabon.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Richesses -->
+      <section id="richesses" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-gem text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Les richesses du Gabon</h2>
+        </div>
+
+        <div class="prose max-w-none">
+          <div class="text-center mb-8">
+            <p class="text-gray-700 max-w-3xl mx-auto">Doté d'énormes ressources naturelles, le Gabon est l'un des pays les plus riches d'Afrique. Mais il peine à diversifier une économie qui dépend encore trop fortement du pétrole, moteur clé de son développement.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-primary-100 to-accent-100 rounded-xl p-6 text-center">
+              <div class="w-16 h-16 rounded-full bg-primary-200 flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-gas-pump text-primary-700 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Pétrole</h3>
+              <p class="text-gray-600">80% des exportations</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-100 to-lime-100 rounded-xl p-6 text-center">
+              <div class="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-tree text-green-700 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Bois et Forêts</h3>
+              <p class="text-gray-600">88% de couverture forestière</p>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-100 to-amber-100 rounded-xl p-6 text-center">
+              <div class="w-16 h-16 rounded-full bg-yellow-200 flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-mountain text-yellow-700 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Minerais</h3>
+              <p class="text-gray-600">2e exportateur mondial de manganèse</p>
+            </div>
+            <div class="bg-gradient-to-br from-teal-100 to-cyan-100 rounded-xl p-6 text-center">
+              <div class="w-16 h-16 rounded-full bg-teal-200 flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-leaf text-teal-700 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-2">Biodiversité</h3>
+              <p class="text-gray-600">13 parcs nationaux</p>
+            </div>
+          </div>
+
+          <!-- Pétrole -->
+          <div id="petrole" class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl p-6 mb-8">
+            <h3 class="text-xl font-semibold text-primary-700 mb-4 flex items-center">
+              <i class="fas fa-gas-pump mr-2"></i> Le pétrole, carburant de l'économie gabonaise
+            </h3>
+            <div class="flex flex-col md:flex-row gap-6">
+              <div class="md:w-2/3">
+                <p class="mb-4">Le pétrole représente environ 80 % des exportations du Gabon et plus d'un tiers de son PIB. Membre de l'OPEP, le pays produit près de 200 000 barils par jour.</p>
+                <p>Les gisements se trouvent principalement autour de Port-Gentil (Ogooué-Maritime) et en offshore profond. Le secteur reste vulnérable aux fluctuations mondiales des prix.</p>
+              </div>
+              <div class="md:w-1/3">
+                <img src="https://s.france24.com/media/display/f64527b8-4739-11ee-8006-005056a90284/w:1280/p:16x9/000_KE1X0%20-%20Gbaon.jpg" alt="Plateforme pétrolière" class="rounded-lg shadow">
+                <p class="text-sm text-gray-500 mt-2">Plateforme pétrolière au large de Port-Gentil</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bois -->
+          <div id="bois" class="bg-gradient-to-br from-green-50 to-lime-50 rounded-xl p-6 mb-8">
+            <h3 class="text-xl font-semibold text-green-700 mb-4 flex items-center">
+              <i class="fas fa-tree mr-2"></i> Bois et Forêts Tropicales
+            </h3>
+            <div class="flex flex-col md:flex-row gap-6">
+              <div class="md:w-1/3">
+                <img src="./assets/images/okoume_1.webp" alt="Forêt gabonaise" class="rounded-lg shadow">
+              </div>
+              <div class="md:w-2/3">
+                <p class="mb-4">Avec plus de 88% de couverture forestière, le Gabon est l'un des pays les plus boisés au monde (23 millions d'hectares). Les forêts sont une richesse écologique et économique.</p>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li><strong>Ouest :</strong> forêts sempervirentes (okoumé, ozigo)</li>
+                  <li><strong>Centre :</strong> forêts denses humides (azobé, aiélé, acajou)</li>
+                  <li><strong>Nord-est :</strong> forêts semi-décidues (limba, wengé, ayous)</li>
+                </ul>
+                <p class="mt-4">Le Gabon fournit 90% de l'okoumé mondial. Les zones industrielles comme la Zone Économique Spéciale de Nkok (près de Libreville) assurent la transformation locale du bois.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Minerais -->
+          <div id="minerais" class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-6 mb-8">
+            <h3 class="text-xl font-semibold text-yellow-700 mb-4 flex items-center">
+              <i class="fas fa-mountain mr-2"></i> Minerais : Manganèse, Or, Uranium
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="font-semibold text-lg text-gray-800 mb-2">Manganèse</h4>
+                <p class="mb-4">Le Gabon est le 2<sup>e</sup> exportateur mondial de manganèse, principalement extrait à Moanda (Haut-Ogooué), avec des réserves estimées à plus de 150 millions de tonnes.</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <img src="./assets/images/manganese_1.webp" alt="Manganèse" class="rounded shadow">
+                  <img src="./assets/images/manganese_2.jpeg" alt="Manganèse" class="rounded shadow">
+                </div>
+              </div>
+              <div>
+                <h4 class="font-semibold text-lg text-gray-800 mb-2">Or et Uranium</h4>
+                <p class="mb-2"><strong>Or :</strong> Présent autour d'Étéké (Ngounié), l'or est majoritairement exploité artisanalement. Des projets industriels sont en cours de développement.</p>
+                <p><strong>Uranium :</strong> Historiquement exploité à Oklo et Franceville, l'uranium reste une ressource stratégique avec des gisements inexploités à potentiel élevé.</p>
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                  <img src="./assets/images/maganese_3.webp" alt="Or" class="rounded shadow">
+                  <img src="./assets/images/manganese_4.jpeg" alt="Uranium" class="rounded shadow">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Biodiversité -->
+          <div id="biodiversite" class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-6">
+            <h3 class="text-xl font-semibold text-teal-700 mb-4 flex items-center">
+              <i class="fas fa-leaf mr-2"></i> Biodiversité et Conservation
+            </h3>
+            <div class="flex flex-col md:flex-row gap-6">
+              <div class="md:w-2/3">
+                <p class="mb-4">Le Gabon est une véritable arche naturelle, avec plus de 8 000 espèces végétales et 600 espèces d'oiseaux. Il abrite des espèces emblématiques comme l'éléphant de forêt, le gorille, et la tortue luth.</p>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li>13 <strong>parcs nationaux</strong> (ex. : Loango, Ivindo, Moukalaba-Doudou)</li>
+                  <li>11 <strong>aires marines protégées</strong>, couvrant 25% des eaux territoriales</li>
+                  <li><strong>Sites UNESCO</strong> : Parc de la Lopé-Okanda et Parc d'Ivindo</li>
+                </ul>
+                <p class="mt-4">Grâce à ce réseau de conservation, le Gabon est aujourd'hui un leader mondial en matière de préservation de la nature.</p>
+              </div>
+              <div class="md:w-1/3">
+                <img src="https://www.lepratiquedugabon.com/wp-content/uploads/2024/04/articel-loango-1-768x328.jpg" alt="Parc national" class="rounded-lg shadow">
+                <p class="text-sm text-gray-500 mt-2">Parc national de Loango</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Ethnies -->
+      <section id="ethnies" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-users text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Les ethnies dominantes</h2>
+        </div>
+
+        <div class="prose max-w-none">
+          <p class="mb-6">Le Gabon est composé d'une mosaïque de peuples aux cultures et langues variées. Ci-dessous, un résumé des principaux groupes ethniques, suivi de fiches détaillées pour chacun.</p>
+
+          <div class="overflow-x-auto mb-10">
+            <table class="min-w-full table-auto border border-gray-200 rounded-lg overflow-hidden">
+              <thead class="bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+                <tr>
+                  <th class="px-4 py-3 text-left">Ethnie</th>
+                  <th class="px-4 py-3 text-left">Part de la population</th>
+                  <th class="px-4 py-3 text-left">Régions principales</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Fang</td>
+                  <td class="px-4 py-3 border-b border-gray-200">~23 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Nord-est, Centre, Estuaire</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Shira-Punu &amp; Vili</td>
+                  <td class="px-4 py-3 border-b border-gray-200">~19 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Sud-ouest, Littoral</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Nzebi-Duma</td>
+                  <td class="px-4 py-3 border-b border-gray-200">~11 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Sud, Centre-ouest</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Mbédé-Téké</td>
+                  <td class="px-4 py-3 border-b border-gray-200">6–7 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Haut-Ogooué, Ogooué-Lolo</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Myènè (Mpongwe, Orungu…)</td>
+                  <td class="px-4 py-3 border-b border-gray-200">~5 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Estuaire, Littoral</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Kota-Kélé</td>
+                  <td class="px-4 py-3 border-b border-gray-200">4–5 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Centre-nord</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Okandé-Tsogho</td>
+                  <td class="px-4 py-3 border-b border-gray-200">~2 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Ogooué-Ivindo</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 border-b border-gray-200 font-medium">Pygmées (Baka…)</td>
+                  <td class="px-4 py-3 border-b border-gray-200">~0,3 %</td>
+                  <td class="px-4 py-3 border-b border-gray-200">Forêts</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium">Autres petits groupes</td>
+                  <td class="px-4 py-3">7–13 %</td>
+                  <td class="px-4 py-3">Un peu partout</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Fang -->
+            <div class="bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-3">Fang</h3>
+              <ul class="list-disc pl-5 space-y-2">
+                <li><strong>Part de la population :</strong> ~23 %</li>
+                <li><strong>Régions :</strong> Nord-est, Centre, Estuaire, Woleu-Ntem, Ogooué-Ivindo</li>
+                <li><strong>Langues :</strong> dialectes bantous (Ntoumou, Okak, Mvaï, Nzaman, Mekè)</li>
+                <li><strong>Croyances :</strong> animisme, christianisme, pratiques Bwiti</li>
+              </ul>
+              <p class="mt-3"><strong>Notes :</strong> plus grande ethnie du pays, influente politiquement et culturellement.</p>
+            </div>
+
+            <!-- Shira-Punu & Vili -->
+            <div class="bg-gradient-to-br from-green-50 to-lime-50 rounded-xl p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-3">Shira-Punu &amp; Vili</h3>
+              <ul class="list-disc pl-5 space-y-2">
+                <li><strong>Part de la population :</strong> ~19 %</li>
+                <li><strong>Régions :</strong> Sud-ouest gabonais et littoral</li>
+                <li><strong>Langues :</strong> punu, vili (langues bantoues)</li>
+                <li><strong>Croyances :</strong> christianisme et traditions locales</li>
+              </ul>
+              <p class="mt-3"><strong>Notes :</strong> historiquement commerçants, pêcheurs et agriculteurs.</p>
+            </div>
+
+            <!-- Nzebi-Duma -->
+            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-3">Nzebi-Duma</h3>
+              <ul class="list-disc pl-5 space-y-2">
+                <li><strong>Part de la population :</strong> ~11 %</li>
+                <li><strong>Régions :</strong> Sud, Centre-ouest (Mayoko, Lékoumou)</li>
+                <li><strong>Langues :</strong> inzebi, idouma, iwandji, itsiagui, isihou</li>
+                <li><strong>Croyances :</strong> christianisme, animisme</li>
+              </ul>
+              <p class="mt-3"><strong>Notes :</strong> réputés pour la métallurgie du fer.</p>
+            </div>
+
+            <!-- Mbédé-Téké -->
+            <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-6">
+              <h3 class="text-xl font-semibold text-gray-800 mb-3">Mbédé-Téké</h3>
+              <ul class="list-disc pl-5 space-y-2">
+                <li><strong>Part de la population :</strong> 6–7 %</li>
+                <li><strong>Régions :</strong> Haut-Ogooué, Ogooué-Lolo</li>
+                <li><strong>Langues :</strong> lékéti, téké</li>
+                <li><strong>Croyances :</strong> christianisme, animisme</li>
+              </ul>
+              <p class="mt-3"><strong>Notes :</strong> groupe politique majeur (famille présidentielle).</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Personnages marquants -->
+      <section id="personnages" class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
+            <i class="fas fa-user-tie text-primary-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">Personnages marquants</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <?php
+          $res = $conn->query(
+            "SELECT p.nom, p.description, p.histoire, p.date_naissance, p.date_deces, p.lieu_naissance, p.image, pr.nom AS province, e.nom AS ethnie
+             FROM personnages p
+             LEFT JOIN provinces pr ON p.province_id = pr.id
+             LEFT JOIN ethnies e ON p.ethnie_id = e.id
+             WHERE p.id <= 4 ORDER BY p.nom"
+          );
+
+          while ($row = $res->fetch_assoc()) {
+            $nom = htmlspecialchars($row['nom']);
+            $description = nl2br(htmlspecialchars($row['description'] ?? ''));
+            $histoire = nl2br(htmlspecialchars($row['histoire'] ?? ''));
+            $naissance = htmlspecialchars($row['date_naissance'] ?? '');
+            $deces = htmlspecialchars($row['date_deces'] ?? '');
+            $lieu = htmlspecialchars($row['lieu_naissance'] ?? '');
+            $province = htmlspecialchars($row['province'] ?? '');
+            $ethnie = htmlspecialchars($row['ethnie'] ?? '');
+            $image = htmlspecialchars($row['image'] ?? '');
+
+            echo "<div class='bg-gradient-to-br from-primary-50 to-accent-50 rounded-xl overflow-hidden shadow-lg'>
+                    <div class='flex flex-col md:flex-row'>
+                      <div class='md:w-1/3 p-4 flex justify-center items-center'>
+                        <img src='./assets/images/personnalitees/$image' alt='$nom' class='w-32 h-32 md:w-40 md:h-40 object-cover rounded-full border-4 border-white shadow-lg'>
+                      </div>
+                      <div class='md:w-2/3 p-4'>
+                        <h3 class='text-xl font-bold text-gray-800'>$nom</h3>
+                        <div class='flex flex-wrap gap-2 mt-2 mb-3'>
+                          <span class='bg-primary-100 text-primary-800 text-xs px-2 py-1 rounded'>$ethnie</span>
+                          <span class='bg-accent-100 text-accent-800 text-xs px-2 py-1 rounded'>$province</span>
+                          <span class='bg-secondary-100 text-secondary-800 text-xs px-2 py-1 rounded'>$lieu</span>
+                        </div>
+                        <p class='text-gray-600 mb-4'>$description</p>
+                        <div class='flex justify-between text-sm text-gray-500'>
+                          <span><i class='fas fa-birthday-cake mr-1'></i> $naissance</span>
+                          <span><i class='fas fa-cross mr-1'></i> $deces</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class='p-4 bg-white'>
+                      <h4 class='font-semibold text-gray-800 mb-2'>Histoire et contributions</h4>
+                      <p class='text-gray-600'>$histoire</p>
+                    </div>
+                  </div>";
+          }
+          ?>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Retour en haut -->
+  <a id="backToTop" href="#" class="flex fixed bottom-0 right-6 w-10 h-9 rounded-full bg-gradient-to-r from-primary-600 to-accent-600 hover:from-secondary-600 hover:to-accent-900 text-white  items-center justify-center shadow-lg hover:shadow-xl transition ease-linear z-50">
+    <i class="fas fa-arrow-up"></i>
+  </a>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-primary-800 to-accent-800 text-white py-12 px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Section à propos -->
+      <div class="md:col-span-2">
+        <div class="flex items-center mb-4">
+          <div class="w-12 h-12 rounded-full mr-4 bg-secondary-500 flex items-center justify-center">
+            <img src="./assets/images/logo.png" alt="Logo" class="w-8 h-8">
+          </div>
+          <div class="text-2xl font-bold">Gabon Explorer</div>
+        </div>
+        <p class="text-gray-300 mb-4">Une plateforme éducative pour découvrir l'histoire, la culture et les richesses du Gabon.</p>
+        <div class="flex space-x-4">
+          <a href="#" class="text-white hover:text-secondary-300"><i class="fab fa-facebook fa-lg"></i></a>
+          <a href="#" class="text-white hover:text-secondary-300"><i class="fab fa-twitter fa-lg"></i></a>
+          <a href="#" class="text-white hover:text-secondary-300"><i class="fab fa-instagram fa-lg"></i></a>
+          <a href="#" class="text-white hover:text-secondary-300"><i class="fab fa-youtube fa-lg"></i></a>
+        </div>
+      </div>
+
+      <!-- Liens rapides -->
+      <div>
+        <h4 class="text-xl font-semibold mb-4 text-secondary-300">Liens rapides</h4>
+        <ul class="space-y-2">
+          <li><a href="#description" class="text-gray-300 hover:text-white transition">Description</a></li>
+          <li><a href="#infos" class="text-gray-300 hover:text-white transition">Informations générales</a></li>
+          <li><a href="#richesses" class="text-gray-300 hover:text-white transition">Richesses naturelles</a></li>
+          <li><a href="#ethnies" class="text-gray-300 hover:text-white transition">Ethnies</a></li>
+          <li><a href="#personnages" class="text-gray-300 hover:text-white transition">Personnalités</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h4 class="text-xl font-semibold mb-4 text-secondary-300">Contact</h4>
+        <ul class="space-y-3">
+          <li class="flex items-start">
+            <i class="fas fa-envelope mt-1 mr-3 text-secondary-300"></i>
+            <span><a class="underline" href="mailto:guimapidesmond@outlokk.com">contact@gabonexplorer.ga</a></span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-phone mt-1 mr-3 text-secondary-300"></i>
+            <span>+241 62 94 75 66</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-map-marker-alt mt-1 mr-3 text-secondary-300"></i>
+            <span>Franceville, Gabon</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto mt-10 pt-6 border-t border-gray-700">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-400 text-sm">&copy; <?= date('Y') ?> Gabon Explorer. Tous droits réservés.</p>
+        <p class="text-green-300 text-sm mt-2 md:mt-0">Découvrir, comprendre et préserver la richesse du Gabon</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./assets/js/hyme.js"></script>
+
+</body>
+
+</html>
+<?php
+$conn->close();
+?>
